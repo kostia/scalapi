@@ -106,7 +106,7 @@ module Test
           when String
             obj
           else
-            JSON.dump(obj)
+            MultiJson.encode(obj)
           end
       response.extend(ResponseHelper)
       response.headers = headers.merge(:content_type => "application/json")

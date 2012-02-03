@@ -1,9 +1,16 @@
+PATH
+  remote: .
+  specs:
+    scalapi (0.0.1)
+      multi_json
+      rest-client
+
 GEM
   remote: http://rubygems.org/
   specs:
     diff-lcs (1.1.3)
-    json (1.6.5)
     mime-types (1.17.2)
+    multi_json (1.0.4)
     rest-client (1.6.7)
       mime-types (>= 1.16)
     rspec (2.8.0)
@@ -19,6 +26,5 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  json
-  rest-client
-  rspec (~> 2.6)
+  rspec
+  scalapi!
