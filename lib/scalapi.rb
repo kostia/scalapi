@@ -2,6 +2,9 @@
 #
 # Copyright (c) Infopark AG
 #
+
+require File.expand_path("../scalapi/version", __FILE__)
+
 module Scalapi
   # The convenience "top level" scalarium resource handle using the default
   # configuration Scalapi::Configuration.configuration
@@ -27,6 +30,7 @@ module Scalapi
     dir = File.expand_path(".", mod_source)[0..-4]
     pattern = "#{dir}/*.rb"
     Dir.glob(pattern).each do |file|
+      next if file =~ %r(scalapi/version.rb$)
       const = "#{file[dir.length..-1]}"[0..-4].gsub(%r{[_/](.)}) {$1.upcase}
       mod.autoload const.to_sym, file
     end
