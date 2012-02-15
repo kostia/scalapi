@@ -27,28 +27,6 @@ module Scalapi
       include Nesting
 
 
-      module Listable
-        def all
-          communication.get.map do |attributes|
-            new(attributes, :stale => false)
-          end
-        end
-      end
-
-      module Creatable
-        def create(attributes = nil)
-          new(communication.post(attributes), :stale => false)
-        end
-      end
-
-      module TopLevel
-        def communication
-          super || Scalapi.scalarium.communication[@toplevel]
-        end
-      end
-
-      FEATURES = {:listable => Listable, :creatable => Creatable, :toplevel => TopLevel}
-
       def self.features(*features)
         feature_definitions = []
         features.each do |d|
@@ -65,7 +43,7 @@ module Scalapi
         end
 
         feature_definitions.each do |id, args|
-          extend FEATURES[id]
+          extend Features.const_get("_#{id}".gsub(/_(.)/) {$1.upcase})
           instance_variable_set("@#{id}", args) if args
         end
       end

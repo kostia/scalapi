@@ -6,7 +6,7 @@ module Scalapi
   class Cloud < Core::Model
 
     features :listable, :creatable
-    features :toplevel => "clouds"
+    features :top_level => "clouds"
 
 
     module Applications

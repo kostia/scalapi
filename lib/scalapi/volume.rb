@@ -6,7 +6,7 @@ module Scalapi
   class Volume < Core::Model
 
     features :listable, :creatable
-    features :toplevel => "volumes"
+    features :top_level => "volumes"
 
     def snapshots
       nested("snapshots", :class => Snapshot).all

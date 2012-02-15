@@ -6,7 +6,7 @@ module Scalapi
   class Application < Core::Model
 
     features :listable, :creatable
-    features :toplevel => "applications"
+    features :top_level => "applications"
 
     module Deployments
 
