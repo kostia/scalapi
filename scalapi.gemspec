@@ -18,6 +18,7 @@ Gem::Specification.new do |s|
   s.extra_rdoc_files = ['README.rdoc']
 
   s.add_development_dependency "rspec"
+  s.add_development_dependency "json"
   s.add_runtime_dependency "multi_json"
   s.add_runtime_dependency "rest-client"    # you could theoretically use a different client,
                                             # but you'll have to provide it's API then

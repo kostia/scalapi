@@ -4,10 +4,70 @@
 #
 module Scalapi
   module Core
-    class Model < ModelBase
 
-      def self.build(id)
-        new({'id' => id}, :communication => communication[id], :stale => true)
+    module InstantiatableResource
+
+      def instance_communication_base=(communication)
+        @instance_communication_base = communication
+      end
+
+      def instance_communication_base
+        @instance_communication_base || communication
+      end
+
+    end
+
+
+    class Model < Attributes
+
+      extend Resource
+      extend InstantiatableResource
+
+      include Resource
+      include Nesting
+
+
+      module Listable
+        def all
+          communication.get.map do |attributes|
+            new(attributes, :stale => false)
+          end
+        end
+      end
+
+      module Creatable
+        def create(attributes = nil)
+          new(communication.post(attributes), :stale => false)
+        end
+      end
+
+      module TopLevel
+        def communication
+          super || Scalapi.scalarium.communication[@toplevel]
+        end
+      end
+
+      FEATURES = {:listable => Listable, :creatable => Creatable, :toplevel => TopLevel}
+
+      def self.features(*features)
+        feature_definitions = []
+        features.each do |d|
+          case d
+          when Symbol
+            feature_definitions << [d, nil]
+          when Array
+            feature_definitions << d
+          when Hash
+            d.each do |entry|
+              feature_definitions << entry
+            end
+          end
+        end
+
+        feature_definitions.each do |id, args|
+          extend FEATURES[id]
+          instance_variable_set("@#{id}", args) if args
+        end
       end
 
       def self.find(id)
@@ -21,6 +81,60 @@ module Scalapi
         end
       end
 
+      def self.build(id)
+        new({'id' => id}, :communication => communication[id], :stale => true)
+      end
+
+      # Builds a new instance - bound to the provided communication (resource)
+      def self.new(attributes = nil, options = {})
+        attributes = {'id' => attributes} if String === attributes
+        super(attributes, options)
+      end
+
+      def initialize(attributes, options = {})
+        super(attributes)
+        self.communication = options[:communication]
+        @instance_communication_base = options[:instance_communication_base]
+
+        @stale =
+            if options.include?(:stale)
+              options[:stale]
+            else
+              options[:communication].nil?
+            end
+      end
+
+      def instance_communication_base
+        @instance_communication_base || self.class.instance_communication_base
+      end
+
+      def communication
+        super || begin
+          id or raise "Instance is neither bound to an url nor has an id"
+          instance_communication_base or
+              raise "No instance url prefix provided to determine url from id"
+          self.communication = instance_communication_base[id]
+        end
+      end
+
+      def attributes
+        return super unless @stale
+        attributes = communication.get
+        @stale = false
+        @attributes = attributes
+      end
+
+      # discards any fetched data (reloads and caches on next access)
+      def reload(fetch = false)
+        @stale = true
+        attributes if fetch
+      end
+
+      def id
+        @attributes['id'] if @attributes
+      end
+
     end
   end
 end
+
