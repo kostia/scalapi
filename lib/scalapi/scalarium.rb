@@ -37,6 +37,10 @@ module Scalapi
         nested_clouds.find(id)
       end
 
+      def delete_cloud(id)
+        nested_clouds.build(id).delete
+      end
+
       def create_cloud(attributes)
         nested_clouds.create(attributes)
       end
@@ -57,6 +61,10 @@ module Scalapi
 
       def find_volume(id)
         nested_volumes.find(id)
+      end
+
+      def delete_volume(id)
+        nested_volumes.build(id).delete
       end
 
       def nested_volumes

@@ -5,6 +5,24 @@
 require File.expand_path("../../spec_helper.rb", __FILE__)
 
 module Scalapi
+  describe Cloud, "#delete" do
+    before do
+      intercept_scalapi_calls
+    end
+
+    let(:cloud) {
+      Cloud.new("cloud_under_test")
+    }
+
+    it "should send a DELETE request do '/clouds/<cloud_id>'" do
+      intercepted_calls["clouds/cloud_under_test"].should_receive(:delete)
+      cloud.delete
+    end
+  end
+end
+
+
+module Scalapi
 
   describe Cloud, "#create_application(attributes)" do
     before do

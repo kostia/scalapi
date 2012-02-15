@@ -58,4 +58,24 @@ module Scalapi
       instance.stop
     end
   end
+
+  describe Instance, "#delete" do
+
+    let(:instance) {
+      instantiate_model({"id" => "id_of_instance"}, :class => Instance,
+          :base => "clouds/id_of_cloud/instances")
+    }
+
+    before do
+      intercept_scalapi_calls
+    end
+
+    it "sends a DELETE request to the /cloud/cloud_id/instance/instance_id" do
+      intercepted_calls["clouds/id_of_cloud/instances/id_of_instance"].
+          should_receive(:delete)
+
+      instance.delete
+    end
+
+  end
 end

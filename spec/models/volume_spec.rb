@@ -90,3 +90,21 @@ module Scalapi
     end
   end
 end
+
+module Scalapi
+  describe Volume, "#delete" do
+    let(:volume) {
+      Volume.new("volume_under_test")
+    }
+
+    before do
+      intercept_scalapi_calls
+    end
+
+    it "sends a DELETE request to the /volumes/<volume_id>" do
+      intercepted_calls["volumes/volume_under_test"].should_receive(:delete)
+
+      volume.delete
+    end
+  end
+end

@@ -16,5 +16,9 @@ module Scalapi
       nested("snapshots", :class => Snapshot).create(*attributes)
     end
 
+    def delete
+      communication.delete
+    end
+
   end
 end

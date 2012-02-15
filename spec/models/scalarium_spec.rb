@@ -169,6 +169,23 @@ module Scalapi
 end
 
 module Scalapi
+  describe Scalarium, "#delete_cloud(id)" do
+    before do
+      intercept_scalapi_calls
+    end
+
+    let(:scalarium) {
+      Scalapi.scalarium
+    }
+
+    it "sends a DELETE request to /clouds/<cloud_id>" do
+      intercepted_calls["clouds/c_id"].should_receive(:delete)
+      scalarium.delete_cloud("c_id")
+    end
+  end
+end
+
+module Scalapi
   describe Scalarium, "#volumes" do
     before do
       intercept_scalapi_calls
@@ -193,6 +210,23 @@ module Scalapi
       volumes.should be_all{|c| c.kind_of?(Volume)}
       volumes.should have(2).items
       volumes.map {|v| v.id}.should == %w[volume1 volume2]
+    end
+  end
+end
+
+module Scalapi
+  describe Scalarium, "#delete_volume(id)" do
+    before do
+      intercept_scalapi_calls
+    end
+
+    let(:scalarium) {
+      Scalapi.scalarium
+    }
+
+    it "sends a DELETE request to /volumes/<volume_id>" do
+      intercepted_calls["volumes/v_id"].should_receive(:delete)
+      scalarium.delete_volume("v_id")
     end
   end
 end

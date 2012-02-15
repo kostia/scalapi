@@ -135,5 +135,9 @@ module Scalapi
       end
     end
 
+    def delete
+      communication.delete
+    end
+
   end
 end

@@ -42,7 +42,12 @@ module Scalapi
       all.detect {|app| app['name'] == name}
     end
 
-    # Only available when belonging to a cloud (resource knows if)
+    # Only available when belonging to a cloud (resource knows if).
+    # As applications are always returned rebased to /applications, the
+    # way to delete an application is:
+    #
+    #   cloud.delete_application(application.id)
+    #
     def delete
       communication.delete
     end
