@@ -133,6 +133,7 @@ module Scalapi
       instance = cloud.create_instance({})
       instance.should be
       instance.should be_instance_of(Instance)
+      instance.id.should == "instance_created"
       instance['role_ids'].should == %w[r1 r2]
     end
 
@@ -151,5 +152,45 @@ module Scalapi
 end
 
 module Scalapi
-  describe Cloud, "<Role>" do; end
+  describe Cloud, "#create_role(attributes)" do
+    before do
+      intercept_scalapi_calls
+    end
+
+    let(:cloud) {
+      Cloud.new("cloud_under_test")
+    }
+
+    it "sends a POST request to '/clouds/<cloud_id>/roles'" do
+      intercepted_calls["clouds/cloud_under_test/roles"].
+          should_receive(:post).with('{"name":"forward"}').
+          and_return('{"id":"role_created"}')
+
+      cloud.create_role({:name => "forward"})
+    end
+
+    it "returns an instance of Role based on the returned properties" do
+      intercepted_calls["clouds/cloud_under_test/roles"].should_receive(:post).
+          and_return('{"id":"role_created","name":"forward"}')
+
+      role = cloud.create_role({})
+      role.should be
+      role.should be_instance_of(Role)
+      role.id.should == "role_created"
+      role['name'].should == "forward"
+    end
+
+    it "returns an instance of Instance bound to the cloud's nested role path" do
+      intercepted_calls["clouds/cloud_under_test/roles"].should_receive(:post).
+          and_return('{"id":"role_created"}')
+
+      role = cloud.create_role({})
+      role.should be
+
+      intercepted_calls["clouds/cloud_under_test/roles/role_created"].should_receive(:get).
+          and_return('{"id":"role_created"}')
+      role.reload(true)
+    end
+  end
 end
+
