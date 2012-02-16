@@ -31,8 +31,11 @@ module Scalapi
       end
     end
 
-    def delete
-      communication.delete
+    # Options (according to http://support.scalarium.com/kb/api/deleting-instances):
+    #   delete_volumes: true
+    #   delete_elastic_ip: true
+    def delete(options = nil)
+      communication.delete(options)
     end
 
   end

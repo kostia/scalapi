@@ -57,8 +57,18 @@ module Scalapi
         decode(resource.put(encode(data)))
       end
 
-      def delete
-        resource.delete
+      def delete(data = nil)
+        return resource.delete unless data
+        resource = self.resource.instance_variable_get("@wrapped") || self.resource
+        return resource.delete(encode(data)) unless resource.class.name == "RestClient::Resource"
+        # workaround for rest_client not supporting payload for delete
+        # (even net/http declares delete as body-less, but accepts a body nonetheless)
+        ::RestClient::Request.execute({
+          :headers => resource.options[:headers],
+          :method => :delete,
+          :url => resource.url,
+          :payload => encode(data),
+        })
       end
 
     end

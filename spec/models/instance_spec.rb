@@ -77,5 +77,14 @@ module Scalapi
       instance.delete
     end
 
+    describe "with options" do
+      it "sends a DELETE request with a body containing JSON-options" do
+        intercepted_calls["clouds/id_of_cloud/instances/id_of_instance"].
+            should_receive(:delete).with(%r#\{("delete_volumes":true|"delete_elastic_ip":true|,){3}\}#)
+
+        instance.delete(:delete_volumes => true, :delete_elastic_ip => true)
+      end
+    end
+
   end
 end
