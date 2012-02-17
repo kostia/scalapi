@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    scalapi (0.0.1)
+    scalapi (0.0.2)
       multi_json
       rest-client
 
@@ -12,6 +12,7 @@ GEM
     json (1.6.5)
     mime-types (1.17.2)
     multi_json (1.0.4)
+    rake (0.9.2.2)
     rest-client (1.6.7)
       mime-types (>= 1.16)
     rspec (2.8.0)
@@ -28,5 +29,6 @@ PLATFORMS
 
 DEPENDENCIES
   json
+  rake
   rspec
   scalapi!
