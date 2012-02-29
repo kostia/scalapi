@@ -13,9 +13,15 @@ Library to interact with the Scalarium API.
 
     # get a "default" scalarium - using your configuration
     root = Scalapi.scalarium
-    cloud = root.clouds
-    first_cloud_applications = root.clouds.first.applications
 
+    # get all clouds
+    clouds = root.clouds
+
+    # get the applications of a cloud
+    cloud = clouds.first
+    first_cloud_applications = cloud.applications
+
+    # create a new cloud
     new_cloud = root.create_cloud({...})
 
 
@@ -23,18 +29,24 @@ Library to interact with the Scalarium API.
 
     require 'scalapi'
 
+    # setup the default token
     Scalapi.configure do |config|
       config.token = "default scalarium token"
     end
 
     standard_configuration = Scalapi::Configuration.configuration
 
+    # create a new configuration with fallback to the standard (by reference, not copy)
     extended_configuration = Scalapi::Configuration.new(standard_configuration)
 
+    # setup a different api token and setup logging for all invocations of <resource>."get"
     extended_configuration.configure do |config|
       config.token = "different token"
       config.trace = [:get]
     end
 
+    # the top level scalarium bound to the default token
     default_scalarium = Scalapi.scalarium # same as Scalapi.bind(standard_configuration)
+
+    # the (other) level scalarium bound to the different token
     the_other_scalarium = Scalapi.bind(extended_configuration)
