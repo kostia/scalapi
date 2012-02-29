@@ -230,3 +230,110 @@ module Scalapi
     end
   end
 end
+
+module Scalapi
+  describe Scalarium, "#credentials" do
+    before do
+      intercept_scalapi_calls
+      intercepted_calls["credentials"].stub(:get).and_return('[]')
+    end
+
+    let(:scalarium) {
+      Scalapi.scalarium
+    }
+
+    it "sends a GET request to /credentials" do
+      intercepted_calls["credentials"].should_receive(:get).
+          and_return('[{"id":"credential1"},{"id":"credential2"}]')
+      scalarium.credentials
+    end
+
+    it "returns instances of Credential" do
+      intercepted_calls["credentials"].should_receive(:get).
+          and_return('[{"id":"credential1"},{"id":"credential2"}]')
+      credentials = scalarium.credentials
+
+      credentials.should be_instance_of(Array)
+      credentials.should be_all{|c| c.kind_of?(Credential)}
+      credentials.should have(2).items
+      credentials.map {|c| c.id}.should == %w[credential1 credential2]
+    end
+  end
+
+  describe Scalarium, "#create_credential(attributes)" do
+    before do
+      intercept_scalapi_calls
+      intercepted_calls["credentials"].stub(:post).and_return('{}')
+    end
+
+    let(:scalarium) {
+      Scalapi.scalarium
+    }
+
+    it "sends a POST request to '/credentials with JSON encoded attributes" do
+      intercepted_calls["credentials"].should_receive(:post).
+          with('{"name":"access"}').and_return('{"id":"neu"}')
+      scalarium.create_credential(:name => "access")
+    end
+
+    it "returns an instance of Credential based on the returned properties" do
+      intercepted_calls["credentials"].should_receive(:post).with('{"name":"access"}').
+          and_return('{"id":"neu","aws_access_key_id":"key","aws_secret_access_key":"secret"}')
+      credential = scalarium.create_credential(:name => "access")
+      credential.should be_instance_of(Credential)
+      credential.id.should == "neu"
+      credential['aws_access_key_id'].should == "key"
+      credential['aws_secret_access_key'].should == "secret"
+    end
+  end
+
+  describe Scalarium, "#find_credential(id)" do
+    before do
+      intercept_scalapi_calls
+    end
+
+    let(:scalarium) {
+      Scalapi.scalarium
+    }
+
+    it "sends a GET request to '/credentials/<id>'" do
+      intercepted_calls["credentials/credential_one"].should_receive(:get).
+          and_return('{"id":"credential_one"}')
+      scalarium.find_credential("credential_one").should be
+    end
+
+    context "when the credential exists" do
+      before do
+        intercepted_calls["credentials/credential_one"].stub(:get).
+            and_return('{"id":"credential_one"}')
+      end
+
+      it "returns an instance of credential based on the returned properties" do
+        intercepted_calls["credentials/credential_one"].stub(:get).
+            and_return('{"id":"credential_one","name":"name of the credential"}')
+
+        credential = scalarium.find_credential("credential_one")
+        credential.should be_instance_of(Credential)
+        credential.id.should == "credential_one"
+        credential['name'].should == "name of the credential"
+      end
+    end
+  end
+end
+
+module Scalapi
+  describe Scalarium, "#delete_credential(id)" do
+    before do
+      intercept_scalapi_calls
+    end
+
+    let(:scalarium) {
+      Scalapi.scalarium
+    }
+
+    it "sends a DELETE request to /credentials/<credential_id>" do
+      intercepted_calls["credentials/c_id"].should_receive(:delete)
+      scalarium.delete_credential("c_id")
+    end
+  end
+end

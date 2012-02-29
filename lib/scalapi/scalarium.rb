@@ -75,9 +75,36 @@ module Scalapi
 
     end
 
+    module Credentials
+
+      def credentials
+        nested_credentials.all
+      end
+
+      def find_credential(id)
+        nested_credentials.find(id)
+      end
+
+      def create_credential(attributes)
+        nested_credentials.create(attributes)
+      end
+
+      def delete_credential(id)
+        nested_credentials.build(id).delete
+      end
+
+      def nested_credentials
+        nested("credentials", :class => Credential)
+      end
+
+      protected :nested_credentials
+
+    end
+
     include Applications
     include Clouds
     include Volumes
+    include Credentials
 
   end
 end
