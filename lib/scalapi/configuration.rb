@@ -147,9 +147,10 @@ module Scalapi
       coder = @coder || (@base && @base.coder(false)) and return coder
       if final
         require 'multi_json'
-        json_decoder = MultiJson.method(:decode)
+        json_decoder = MultiJson.method(MultiJson.respond_to?(:load) ? :load : :decode)
+        json_encoder = MultiJson.method(MultiJson.respond_to?(:dump) ? :dump : :encode)
         decoder_spec = {"application/json" => json_decoder, nil => json_decoder}
-        Core::Coder.new(decoder_spec, MultiJson.method(:encode))
+        Core::Coder.new(decoder_spec, json_encoder)
       end
     end
 

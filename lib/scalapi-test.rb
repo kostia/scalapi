@@ -105,6 +105,11 @@ module Test
       attr_accessor :headers
     end
 
+    # :nodoc:
+    def self.json_encoder
+      @encoder ||= MultiJson.method(MultiJson.respond_to?(:dump) ? :dump : :encode)
+    end
+
     # build a response with
     # - a body from the given ruby data (encoded as json) unless being a plain string
     # - headers from the additional response headers
@@ -114,7 +119,7 @@ module Test
           when String
             obj
           else
-            MultiJson.encode(obj)
+            json_encoder.call(obj)
           end
       response.extend(ResponseHelper)
       response.headers = headers.merge(:content_type => "application/json")
