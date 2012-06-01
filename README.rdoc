@@ -48,7 +48,7 @@ Library to interact with the Scalarium API.
     # the top level scalarium bound to the default token
     default_scalarium = Scalapi.scalarium # same as Scalapi.bind(standard_configuration)
 
-    # the (other) level scalarium bound to the different token
+    # the (other) top level scalarium bound to the different token
     the_other_scalarium = Scalapi.bind(extended_configuration)
 
 == ChangeLog
