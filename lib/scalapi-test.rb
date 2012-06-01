@@ -58,7 +58,7 @@ module Test
     # Replaces the default RestClient::Resource with one that simplifies
     # stubbing the resource requests:
     #
-    # Test::Scalapi.resource[<path>] is the object the # requests are sent to.
+    # Test::Scalapi.resource[<path>] is the object the requests are sent to.
     def self.intercept_scalapi_calls(resource = self.resource)
       ::Scalapi.configure do |config|
         config.resource = resource
@@ -77,7 +77,12 @@ module Test
       Resource.reset
     end
 
-    # attributes may be an id
+    # attributes may be also an id instead of the usual hash
+    # supported options are:
+    # - :class - which model to instantiate (default: Scalapi::Core::Model)
+    # - :root  - which top level resource to bind it (default: Scalapi.scalarium)
+    # - :base  - the resource's context path component
+    # - :stale - whether the properties of this model are not trusted (not "loaded from server")
     def self.instantiate_model(attributes, options = {})
       model_class = options[:class] || ::Scalapi::Core::Model
       scalarium = options[:root] || ::Scalapi.scalarium
@@ -100,6 +105,9 @@ module Test
       attr_accessor :headers
     end
 
+    # build a response with
+    # - a body from the given ruby data (encoded as json) unless being a plain string
+    # - headers from the additional response headers
     def self.json_response(obj, headers = {})
       response =
           case obj
