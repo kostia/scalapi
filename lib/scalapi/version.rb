@@ -3,5 +3,5 @@
 # Copyright (c) Infopark AG
 #
 module Scalapi
-  VERSION = "0.0.5"
+  VERSION = "0.0.6"
 end
