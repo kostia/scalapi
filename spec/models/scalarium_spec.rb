@@ -165,6 +165,17 @@ module Scalapi
         cloud['name'].should == "name of the cloud"
       end
     end
+
+    context "when the id is nil" do
+      it "returns nil" do
+        scalarium.find_cloud(nil).should == nil
+      end
+
+      it "does not send a request" do
+        # intercept_scalapi_calls raises an error for every unexpected request
+        scalarium.find_cloud(nil)
+      end
+    end
   end
 end
 

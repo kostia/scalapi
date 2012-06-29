@@ -49,6 +49,7 @@ module Scalapi
       end
 
       def self.find(id)
+        return nil if id.to_s == ""
         instance = build(id)
         begin
           instance.reload(true)
