@@ -53,6 +53,10 @@ Library to interact with the Scalarium API.
 
 == ChangeLog
 
+=== 0.0.5
+
+- Fix: Model#find(nil) returns nil now (instead of the result of an index request)
+
 === 0.0.4
 
 - uses new MultiJson API when available (less noisy deprecation warnings)
