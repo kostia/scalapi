@@ -53,6 +53,10 @@ Library to interact with the Scalarium API.
 
 == ChangeLog
 
+=== 0.0.7
+
+- Scalarium/Rails 3.2 requires a proper request format declaration
+
 === 0.0.6
 
 - Fix: MultiJson API detection improved

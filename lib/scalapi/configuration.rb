@@ -40,6 +40,7 @@ module Scalapi
           config.url = "https://manage.scalarium.com/api"
           config.resource_headers = {
             'Accept' => 'application/vnd.scalarium-v1+json',
+            'Content-Type' => 'application/json',
           }
         end.freeze
       end
@@ -95,7 +96,10 @@ module Scalapi
     # The following  header need not to be configured when using the default configuration
     # (as a base)
     # - Accept:            application/vnd.scalarium-v1+json
-    # Will be provided as a second parameter when creating the base resource
+    # - Content-Type:      application/json
+    #
+    # Will be provided as a second parameter to the (restclient) resource
+    # representing '/' (to instantiate a Scalarium)
     def resource_headers=(resource_headers)
       @resource_headers = resource_headers
     end
