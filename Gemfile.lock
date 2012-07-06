@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    scalapi (0.0.7)
+    scalapi (0.0.8)
       multi_json
       rest-client
 

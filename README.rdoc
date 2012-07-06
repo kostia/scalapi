@@ -57,6 +57,10 @@ MIT - see MIT-LICENSE
 
 == ChangeLog
 
+=== 0.0.8
+
+- License: Feel free to use scalapi at any time at your own risk.
+
 === 0.0.7
 
 - Scalarium/Rails 3.2 requires a proper request format declaration
