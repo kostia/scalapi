@@ -51,6 +51,10 @@ Library to interact with the Scalarium API.
     # the (other) top level scalarium bound to the different token
     the_other_scalarium = Scalapi.bind(extended_configuration)
 
+== License
+
+MIT - see MIT-LICENSE
+
 == ChangeLog
 
 === 0.0.7
@@ -74,4 +78,3 @@ Library to interact with the Scalarium API.
 === 0.0.3
 
 - added resource model: Credentials
-

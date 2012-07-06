@@ -15,11 +15,13 @@ Gem::Specification.new do |s|
   s.executables   = []
   s.require_paths = ["lib"]
 
+  s.license = 'MIT'                         # see MIT-LICENSE
+
   s.extra_rdoc_files = ['README.rdoc']
 
   s.add_development_dependency "rake"
   s.add_development_dependency "rspec"
-  s.add_development_dependency "json"
+  s.add_development_dependency "json"       # provides an engine for multi_json
   s.add_runtime_dependency "multi_json"
   s.add_runtime_dependency "rest-client"    # you could theoretically use a different client,
                                             # but you'll have to provide it's API then
