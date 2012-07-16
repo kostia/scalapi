@@ -53,9 +53,20 @@ Library to interact with the Scalarium API.
 
 == License
 
-MIT - see MIT-LICENSE
+MIT - see [MIT-LICENSE](https://raw.github.com/infopark/scalapi/master/MIT-LICENSE)
 
 == ChangeLog
+
+=== 0.0.9
+
+- Configurable resource_builder - can specify a (higher) request timeout now:
+
+   Scalapi.configure.tap do |config|
+     config.resource_builder = lambda {|url, options|
+       require 'restclient'
+       ::RestClient::Resource.new(url, options.merge(:timeout => 60))
+     }
+   end
 
 === 0.0.8
 
