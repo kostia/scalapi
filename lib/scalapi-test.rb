@@ -65,8 +65,12 @@ module Test
       end
     end
 
+    def self.url
+      "http://scalarium.example.com"
+    end
+
     # The top of the test resource stack
-    def self.resource(base = "http://scalarium.example.com")
+    def self.resource(base = self.url)
       Resource["", base]
     end
 

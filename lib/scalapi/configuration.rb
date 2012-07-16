@@ -2,6 +2,7 @@
 #
 # Copyright (c) Infopark AG
 #
+
 module Scalapi
   #
   # The configuration holds a server url, credentials, i/o headers, ...
@@ -67,27 +68,27 @@ module Scalapi
     end
 
     # The scalarium token (required to access the api)
-    def token=(token)
-      @token = token
-    end
+    attr_accessor :token
 
     # returns the stored token (fallback to base configuration)
     # when final is true, complains about a missing token
     def token(final = true)
-      token = @token || (@base && @base.token(false)) and return token
-      raise "Scalarium token has not been configured" if final
+      property(:token, final) do
+        raise "Scalarium token has not been configured"
+      end
     end
 
     # The scalarium api url (default: https://manage.scalarium.com)
-    def url=(url)
-      @url = url
-    end
+    attr_writer :url
 
     # returns the stored url (fallback to base configuration)
     # when final is true, complains about a missing url
     def url(final = true)
-      url = @url || (@base && @base.url(false)) and return url.sub(%r(/+$), "")
-      raise "Missing scalarium base url" if final
+      url = property(:url, final) do
+        raise "Missing scalarium base url"
+      end
+      url = url.sub(%r(/+$), "") if url
+      url
     end
 
     # Additional HTTP Headers to send.
@@ -100,47 +101,48 @@ module Scalapi
     #
     # Will be provided as a second parameter to the (restclient) resource
     # representing '/' (to instantiate a Scalarium)
-    def resource_headers=(resource_headers)
-      @resource_headers = resource_headers
-    end
+    attr_writer :resource_headers
 
     # Returns all headers set to the configuration stack. Appends a header for the
     # configured token unless it has been explicitely set.
     def resource_headers(final = true)
-      headers = {}
-      headers = headers.merge(@resource_headers || {})
-      if (base_headers = @base && @base.resource_headers(false))
-        base_headers.each do |(key, value)|
-          headers.include?(key) || headers[key] = value
-        end
-      end
-      if final
-        headers.include?('X-Scalarium-token') or headers = headers.merge('X-Scalarium-Token' => token)
+      headers = {}.merge(base_property(:resource_headers)).merge(@resource_headers || {})
+      if final && !headers.include?('X-Scalarium-token')
+        headers = headers.merge('X-Scalarium-Token' => token)
       end
       headers
     end
 
-    # In case you don't want to I/O using the default RestClient::Resource.
-    # Most probably only changed for test cases.
-    # The resource must provide
+    # In case you want a different top level rest client resource (e.g. provide
+    # some more options), you can provide your own (rest client) resource_builder.
+    #
+    # It must respond_to?(:call) (with arguments url and :headers => resource_headers) and
+    # return a resource which provides
     # - all the used request methods (#get, #post, #delete, ...)
     # - return sub-resource instances via #[<path>]
     # - #url to access the complete resource url
-    def resource=(resource)
-      @resource = resource
+    attr_writer :resource_builder
+
+    def resource_builder(final = true)
+      property(:resource_builder, final) do
+        require 'rest_client'
+        RestClient::Resource.method(:new)
+      end
     end
 
-    # The configured resource. Defaults to a RestClient::Resource created with the
-    # configured url and headers.
+    # If you want to replace the resource completely.
+    # Especially for tests where token and url don't matter.
+    # In other cases, you should better use resource_builder instead.
+    attr_writer :resource
+
+    # The (top level) resources as returned by the configured resource_builder.
+    # Defaults to a RestClient::Resource created with the configured url and headers.
     # If trace is active, returns the resource wrapped into a logging one.
     def resource(final = true)
-      resource = @resource || (@base && @base.resource(false)) and return resource
-      if final
-        require 'rest_client'
-        resource = RestClient::Resource.new(url, :headers => resource_headers(final))
-        unless (traced_calls = self.trace(final)).empty?
-          resource = Logging::TracingResource.new(resource, traced_calls)
-        end
+      property(:resource, final) do
+        resource = resource_builder.call(url, :headers => resource_headers(final))
+        traced_calls = trace(true) || []
+        resource = Logging::TracingResource.new(resource, traced_calls) unless traced_calls.empty?
         resource
       end
     end
@@ -148,8 +150,7 @@ module Scalapi
     # By default, the library talks json to scalarium. Allows you to change the
     # Marshaller/Unmarshaller combination (don't forget to change the Accept header)
     def coder(final = true)
-      coder = @coder || (@base && @base.coder(false)) and return coder
-      if final
+      property(:coder, final) do
         require 'multi_json'
         json_decoder, json_encoder =
             begin
@@ -170,15 +171,31 @@ module Scalapi
       Core::Communication.new(resource(true), coder(true))
     end
 
-    # Set a list of method calls for the resource instances to be traced.
-    def trace=(methods)
-      @trace = methods
-    end
+    # Set a list of method names for the resource instances to be traced.
+    #
+    # Example:
+    #
+    #   configuration.trace([:get])
+    #
+    attr_writer :trace
 
     def trace(final = true)
-      trace = @trace || []
-      trace += @base.trace(false) if @base
-      trace
+      property(:trace, final)
+    end
+
+    # :nodoc:
+    def property(name, final, &block)
+      property = instance_variable_get("@#{name}")
+      property ||= base_property(name)
+      if final && block_given?
+        property ||= yield property
+      end
+      property
+    end
+
+    # :nodoc:
+    def base_property(name)
+      @base.property(name, false) if @base
     end
   end
 end
