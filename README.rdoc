@@ -57,6 +57,10 @@ MIT - see [MIT-LICENSE](https://raw.github.com/infopark/scalapi/master/MIT-LICEN
 
 == ChangeLog
 
+=== 0.0.10
+
+- Application#deployments fixed
+
 === 0.0.9
 
 - Configurable resource_builder - can specify a (higher) request timeout now:

@@ -4,6 +4,8 @@
 #
 module Scalapi
   class Deployment < Core::Model
+    features :listable
+
     def for_instance(id)
       instance_deployment = nested("instances", :class => InstanceDeployment).build(id)
       instance_deployment.reload(true)
